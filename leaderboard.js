@@ -4,13 +4,26 @@
 Players = new Mongo.Collection("players");
 
 if (Meteor.isClient) {
+
+  if (!Session.get("sort_by")) {
+    Session.set("sort_by", "score");
+  }
+
   Template.leaderboard.players = function () {
-    return Players.find({}, {sort: {score: -1, name: 1}});
+    if (Session.equals("sort_by", "score")) {
+      return Players.find({}, {sort: {score: -1, name: 1}});
+    } else {
+      return Players.find({}, {sort: {name: 1, score: -1}});
+    }
   };
 
   Template.leaderboard.selected_name = function () {
     var player = Players.findOne(Session.get("selected_player"));
     return player && player.name;
+  };
+
+  Template.leaderboard.sorted_by_score = function () {
+    return Session.equals("sort_by", "score");
   };
 
   Template.player.selected = function () {
@@ -20,6 +33,12 @@ if (Meteor.isClient) {
   Template.leaderboard.events({
     'click button.inc': function () {
       Players.update(Session.get("selected_player"), {$inc: {score: 5}});
+    },
+    'click button.sort-name': function () {
+      Session.set("sort_by", "name");
+    },
+    'click button.sort-score': function () {
+      Session.set("sort_by", "score");
     }
   });
 

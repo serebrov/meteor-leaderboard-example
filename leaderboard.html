@@ -10,6 +10,11 @@
 </body>
 
 <template name="leaderboard">
+  {{#if sorted_by_score}}
+    <button class="sort-name">Sort by name</button>
+  {{else}}
+    <button class="sort-score">Sort by score</button>
+  {{/if}}
   <div class="leaderboard">
     {{#each players}}
       {{> player}}
